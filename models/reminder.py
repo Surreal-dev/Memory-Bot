@@ -8,6 +8,7 @@ class Reminder(Model):
     message = TextField()
     remind_at = DateTimeField()
     recurrence = CharField(null=True)
+    guild_id = IntegerField(null=True)
 
     class Meta:
         database = db
