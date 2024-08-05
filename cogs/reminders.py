@@ -92,7 +92,7 @@ class ReminderCommands(commands.Cog):
         try:
             settings = ServerSettings.get(ServerSettings.guild_id == interaction.guild_id)
             if settings.reminder_channel_id is None or settings.reminder_role_id is None:
-                await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /settings command to configure them first.', color=discord.Color.red()))
+                await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /serversettings command to configure them first.', color=discord.Color.red()))
                 return
 
             role = interaction.guild.get_role(settings.reminder_role_id)
@@ -113,7 +113,7 @@ class ReminderCommands(commands.Cog):
         except ValueError:
             await interaction.response.send_message(embed=Embed(description='Invalid date, hour, or minute format. Please use YYYY-MM-DD for date, 0-23 for hour, and 0-59 for minute.', color=discord.Color.red()))
         except ServerSettings.DoesNotExist:
-            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /settings command to configure them first.', color=discord.Color.red()))
+            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /serversettings command to configure them first.', color=discord.Color.red()))
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -135,7 +135,7 @@ class ReminderCommands(commands.Cog):
         try:
             settings = ServerSettings.get(ServerSettings.guild_id == interaction.guild_id)
             if settings.reminder_channel_id is None or settings.reminder_role_id is None:
-                await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /settings command to configure them first.', color=discord.Color.red()))
+                await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /serversettings command to configure them first.', color=discord.Color.red()))
                 return
 
             reminders = Reminder.select().where(Reminder.guild_id == interaction.guild_id).order_by(Reminder.remind_at)
@@ -147,7 +147,7 @@ class ReminderCommands(commands.Cog):
             view = PaginatorView(reminders)
             await interaction.response.send_message(embed=view.create_embed(), view=view)
         except ServerSettings.DoesNotExist:
-            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /settings command to configure them first.', color=discord.Color.red()))
+            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /serversettings command to configure them first.', color=discord.Color.red()))
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ class ReminderCommands(commands.Cog):
             await interaction.response.send_message(embed=embed)
         
         except ServerSettings.DoesNotExist:
-            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /settings command to configure them first.', color=discord.Color.red()))
+            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /serversettings command to configure them first.', color=discord.Color.red()))
         except Reminder.DoesNotExist:
             await interaction.response.send_message(embed=Embed(description='Reminder not found.', color=discord.Color.red()))
         except Exception as e:
@@ -218,7 +218,7 @@ class ReminderCommands(commands.Cog):
             await interaction.response.send_message(embed=embed)
         
         except ServerSettings.DoesNotExist:
-            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /settings command to configure them first.', color=discord.Color.red()))
+            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /serversettings command to configure them first.', color=discord.Color.red()))
         except Exception as e:
             await interaction.response.send_message(embed=Embed(description=f'An error occurred: {str(e)}', color=discord.Color.red()))
 
@@ -294,7 +294,7 @@ class ReminderCommands(commands.Cog):
             await interaction.response.send_message(embed=embed)
         
         except ServerSettings.DoesNotExist:
-            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /settings command to configure them first.', color=discord.Color.red()))
+            await interaction.response.send_message(embed=Embed(description='Server reminder settings have not been configured. Please use the /serversettings command to configure them first.', color=discord.Color.red()))
         except Reminder.DoesNotExist:
             await interaction.response.send_message(embed=Embed(description='Reminder not found.', color=discord.Color.red()))
         except Exception as e:
