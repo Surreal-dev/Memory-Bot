@@ -1,4 +1,4 @@
 import os
 
-if os.path.exists('reminders.db'):
-    os.remove('reminders.db')
+if os.path.exists('memory.db'):
+    os.remove('memory.db')

@@ -1,7 +1,7 @@
 from peewee import *
 from peewee import Model, IntegerField, CharField, DateTimeField, TextField
 
-db = SqliteDatabase('reminders.db')
+db = SqliteDatabase('memory.db')
 
 class Reminder(Model):
     user_id = IntegerField()

@@ -1,6 +1,6 @@
 from peewee import *
 
-db = SqliteDatabase('reminders.db')
+db = SqliteDatabase('memory.db')
 
 class ServerSettings(Model):
     guild_id = BigIntegerField(unique=True)

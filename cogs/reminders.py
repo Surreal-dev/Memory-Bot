@@ -5,61 +5,7 @@ from discord.ui import Button, View
 from models.reminder import Reminder
 from models.serversettings import ServerSettings
 from datetime import datetime, timedelta
-
-class PaginatorView(View):
-    def __init__(self, reminders, per_page=2):
-        super().__init__()
-        self.reminders = reminders
-        self.per_page = per_page
-        self.current_page = 0
-        self.total_pages = (len(reminders) - 1) // per_page + 1
-        self.update_buttons()
-
-    def update_buttons(self):
-        self.first_page.disabled = self.current_page == 0
-        self.previous_page.disabled = self.current_page == 0
-        self.next_page.disabled = self.current_page >= self.total_pages - 1
-        self.last_page.disabled = self.current_page >= self.total_pages - 1
-
-    def create_embed(self):
-        start = self.current_page * self.per_page
-        end = start + self.per_page
-        reminders_slice = self.reminders[start:end]
-
-        embed = Embed(title="Reminders", color=discord.Color.blue())
-        for reminder in reminders_slice:
-            embed.add_field(name=f"ID: {reminder.id}", value=f"Message: {reminder.message}\nTime: {reminder.remind_at.strftime('%Y-%m-%d %H:%M')}\nRecurrence: {reminder.recurrence or 'None'}", inline=False)
-        return embed
-
-    async def update_embed(self, interaction: discord.Interaction):
-        embed = self.create_embed()
-        await interaction.response.edit_message(embed=embed, view=self)
-
-    @discord.ui.button(label="<<", style=discord.ButtonStyle.gray)
-    async def first_page(self, interaction: discord.Interaction, button: Button):
-        self.current_page = 0
-        self.update_buttons()
-        await self.update_embed(interaction)
-
-    @discord.ui.button(label="<", style=discord.ButtonStyle.gray)
-    async def previous_page(self, interaction: discord.Interaction, button: Button):
-        self.current_page -= 1
-        self.update_buttons()
-        await self.update_embed(interaction)
-
-    @discord.ui.button(label=">", style=discord.ButtonStyle.gray)
-    async def next_page(self, interaction: discord.Interaction, button: Button):
-        self.current_page += 1
-        self.update_buttons()
-        await self.update_embed(interaction)
-
-    @discord.ui.button(label=">>", style=discord.ButtonStyle.gray)
-    async def last_page(self, interaction: discord.Interaction, button: Button):
-        self.current_page = self.total_pages - 1
-        self.update_buttons()
-        await self.update_embed(interaction)
-
-
+from utility.pagination import PaginatorView
 
 class ReminderCommands(commands.Cog):
 
@@ -124,7 +70,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='setpersonal', description='Set a personal reminder')
+    @app_commands.command(name='setpreminder', description='Set a personal reminder')
     @app_commands.describe(date='Date of the reminder (YYYY-MM-DD)', hour='Hour of the reminder (0-23)', minute='Minute of the reminder (0-59)', message='The reminder message', recurrence='Recurrence pattern (e.g., daily, weekly, monthly)')
     async def set_reminder(self, interaction: discord.Interaction, date: str, hour: int, minute: int, message: str, recurrence: str = None):
         try:
@@ -140,7 +86,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='setserver', description='Set a reminder for the server')
+    @app_commands.command(name='setsreminder', description='Set a reminder for the server')
     @app_commands.describe(date='Date of the reminder (YYYY-MM-DD)', hour='Hour of the reminder (0-23)', minute='Minute of the reminder (0-59)', message='The reminder message', recurrence='Recurrence pattern (e.g., daily, weekly, monthly)')
     async def serverreminder(self, interaction: discord.Interaction, date: str, hour: int, minute: int, message: str, recurrence: str = None):
         try:
@@ -171,7 +117,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='listpersonal', description='List all your personal reminders')
+    @app_commands.command(name='listpreminders', description='List all your personal reminders')
     async def list_reminders(self, interaction: discord.Interaction):
         reminders = Reminder.select().where(Reminder.user_id == interaction.user.id, Reminder.guild_id.is_null(True)).order_by(Reminder.remind_at)
         if not reminders.exists():
@@ -184,7 +130,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='listserver', description='List all server reminders')
+    @app_commands.command(name='listsreminders', description='List all server reminders')
     async def list_server(self, interaction: discord.Interaction):
         try:
             settings = ServerSettings.get(ServerSettings.guild_id == interaction.guild_id)
@@ -206,7 +152,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='deletepersonal', description='Delete a personal reminder')
+    @app_commands.command(name='deletepreminder', description='Delete a personal reminder')
     @app_commands.describe(reminder_id='The ID of the reminder to delete')
     async def delete_reminder(self, interaction: discord.Interaction, reminder_id: int):
         try:
@@ -218,7 +164,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='deleteserver', description='Delete a specific server reminder')
+    @app_commands.command(name='deletesreminder', description='Delete a server reminder')
     @app_commands.describe(reminder_id='The ID of the reminder to delete')
     async def delete_server_reminder(self, interaction: discord.Interaction, reminder_id: int):
         try:
@@ -246,7 +192,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='clearpersonal', description='Clear all personal reminders')
+    @app_commands.command(name='clearpreminders', description='Clear all personal reminders')
     async def clear_reminders(self, interaction: discord.Interaction):
         deleted_count = Reminder.delete().where(Reminder.user_id == interaction.user.id).execute()
         embed = Embed(title="Reminders Cleared", description=f"{deleted_count} reminders have been cleared.", color=discord.Color.green())
@@ -254,7 +200,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='clearserver', description='Clear all server reminders')
+    @app_commands.command(name='clearsreminders', description='Clear all server reminders')
     async def clear_server_reminders(self, interaction: discord.Interaction):
         try:
             # Fetch the server settings
@@ -278,7 +224,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='updatepersonal', description='Update a personal reminder')
+    @app_commands.command(name='updatepreminder', description='Update a personal reminder')
     @app_commands.describe(reminder_id='The ID of the reminder to update', date='New date (YYYY-MM-DD)', hour='New hour (0-23)', minute='New minute (0-59)', message='New message', recurrence='Recurrence pattern (e.g., daily, weekly, monthly)')
     async def update_reminder(self, interaction: discord.Interaction, reminder_id: int, date: str, hour: int, minute: int, message: str, recurrence: str = None):
         try:
@@ -310,7 +256,7 @@ class ReminderCommands(commands.Cog):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @app_commands.command(name='updateserver', description='Update an existing server reminder')
+    @app_commands.command(name='updatesreminder', description='Update an existing server reminder')
     @app_commands.describe(reminder_id='The ID of the reminder to update', date='New date (YYYY-MM-DD)', hour='New hour (0-23)', minute='New minute (0-59)', message='New message', recurrence='Recurrence pattern (e.g., daily, weekly, monthly)')
     async def update_server_reminder(self, interaction: discord.Interaction, reminder_id: int, date: str, hour: int, minute: int, message: str, recurrence: str = None):
         try:

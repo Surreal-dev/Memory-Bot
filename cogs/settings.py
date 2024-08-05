@@ -9,7 +9,7 @@ class ServerCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name='settings', description='Configure server reminder settings')
+    @app_commands.command(name='serversettings', description='Configure server reminder settings')
     async def settings(self, interaction: discord.Interaction, channel: discord.TextChannel, role: discord.Role):
         if interaction.user.id != interaction.guild.owner_id:
             await interaction.response.send_message(embed=Embed(description='Only the server owner can use this command.', color=discord.Color.red()))
