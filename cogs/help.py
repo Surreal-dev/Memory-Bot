@@ -110,7 +110,9 @@ COMMANDS_INFO = {
     },
     "help": {
         "description": "Shows this message.",
-        "parameters": {}
+        "parameters": {
+            "command_name": "The command you wish to see more info about."
+        }
     }
 }
 
