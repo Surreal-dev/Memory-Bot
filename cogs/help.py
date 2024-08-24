@@ -101,6 +101,10 @@ COMMANDS_INFO = {
         "description": "Clear all tasks in your todo list.",
         "parameters": {}
     },
+    "memorygame": {
+        "description": "Start a memory game!",
+        "parameters": {}
+    },
     "serversettings": {
         "description": "Configure server settings.",
         "parameters": {
@@ -122,6 +126,7 @@ class HelpSelect(Select):
         options = [
             discord.SelectOption(label="Reminders", description="Commands related to reminders", value="reminders"),
             discord.SelectOption(label="To-Do List", description="Commands related to to-do lists", value="todo"),
+            discord.SelectOption(label="Fun", description="Entertaining Commands", value="fun"),
             discord.SelectOption(label="Utility", description="Utility commands", value="utility")
         ]
         super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
@@ -148,6 +153,9 @@ class HelpSelect(Select):
                 "/completetodo",
                 "/removetodo",
                 "/cleartodo"
+            ],
+            "fun": [
+                "/memorygame"
             ],
             "utility": [
                 "/serversettings",
